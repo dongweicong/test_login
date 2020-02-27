@@ -7,7 +7,6 @@ import { Auth } from "aws-amplify";
 import IdleTimer from 'react-idle-timer'
 import "./App.css";
 import Routes from "./Routes";
-import DropDown from "./components/DropDown";
 
 
 function App(props) {
@@ -88,8 +87,8 @@ function App(props) {
                           ? //<a class="logout-btn" href="/login" role="button">Logout</a>
                           <div className="navbar-header">
                               <div className="headerHeight flexVertical">
-                                  <DropDown signout={handleLogout}/>
-                                  {/*<Button onClick={handleLogout}>Logout</Button>*/}
+
+                                  <Button onClick={handleLogout}>Logout</Button>
                               </div>
 
                           </div>
