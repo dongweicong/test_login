@@ -1,14 +1,39 @@
 .App {
-  margin-top: 15px;
+  margin-top: 0px;
+  height: 72px;
 }
 
-.App .navbar-brand {
-  font-weight: bold;
-  text-align: center;
+.navbar {
+  padding-left: 0px;
+  padding-right: 0px;
+  height:72px;
+  background: #408740;
+
 }
 
-.App .navbar-header {
-  text-align: center;
+.headerHeight {
+  height: 72px;
+}
+
+.flexVertical {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.navbar-flowscape .navbar-brand img {
+  width: 55%;
+  height: auto;
+}
+
+.nav-item {
+  font-size: 30px;
+  color: aliceblue;
+}
+
+.logout-btn {
+  color: green;
+  text-decoration-color: green;
 }
 
 .App-logo {

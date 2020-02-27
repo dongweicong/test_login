@@ -26,17 +26,13 @@ export default function Login(props) {
 
         try {
             await Auth.signIn(email, password);
-            alert("Logged in");
-            props.userHasAuthenticated(true);
+            props.setIsAuthenticated(true);
             props.history.push("/");
         } catch (e) {
             alert(e.message);
         }
     }
 
-    // if (checkLogin()) {
-    //     return <Redirect to={"/login"}/>
-    // }
     return (
 
         <div className="Login">

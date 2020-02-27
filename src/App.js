@@ -1,24 +1,47 @@
 import React, { useState, useEffect } from "react";
 import { Link, withRouter } from "react-router-dom";
-import { Nav, Navbar, NavItem } from "react-bootstrap";
+import { Nav, Navbar, NavItem, NavDropdown, Button } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 
 import { Auth } from "aws-amplify";
+import IdleTimer from 'react-idle-timer'
 import "./App.css";
 import Routes from "./Routes";
+import DropDown from "./components/DropDown";
+
 
 function App(props) {
-    const [isAuthenticated, userHasAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isAuthenticating, setIsAuthenticating] = useState(true);
+    const [timer, setTimer] = useState(null);
 
     useEffect(() => {
         onLoad();
     }, []);
 
+    function _onAction(e) {
+        console.log('user did something', e);
+    }
+
+    function _onActive(e) {
+        console.log('user is active', e);
+        console.log('time remaining', timer.getRemainingTime());
+    }
+
+    async function _onIdle(e) {
+        console.log('user is idle', e);
+        console.log('last active', timer.getLastActiveTime());
+
+        await handleLogout();
+
+        // console.log('user is signed out')
+
+    }
+
     async function onLoad() {
         try {
-            await Auth.currentSession();
-            userHasAuthenticated(true);
+            console.log(await Auth.currentSession());
+            setIsAuthenticated(true);
         }
         catch(e) {
             if (e !== 'No current user') {
@@ -32,35 +55,51 @@ function App(props) {
     async function handleLogout() {
         await Auth.signOut();
 
-        userHasAuthenticated(false);
+        setIsAuthenticated(false);
         props.history.push("/login");
     }
 
+
+
   return (
       !isAuthenticating &&
-      <div className="App container">
-        <Navbar fluid collapseOnSelect>
-          <Navbar.Header>
-            <Navbar.Brand>
-              <Link to="/">Flowscape</Link>
-            </Navbar.Brand>
-            <Navbar.Toggle />
-          </Navbar.Header>
-            <Navbar.Collapse>
-                <Nav pullRight>
-                    {isAuthenticated
-                        ? <NavItem onClick={handleLogout}>Logout</NavItem>
-                        : <>
-                            <LinkContainer to="/login">
-                                <NavItem>Login</NavItem>
-                            </LinkContainer>
-                        </>
-                    }
-                </Nav>
-            </Navbar.Collapse>
-        </Navbar>
+      <div>
+          <IdleTimer
+              ref={ref => setTimer(ref)}
+              element={document}
+              onActive={_onActive}
+              onIdle={_onIdle}
+              onAction={_onAction}
+              debounce={250}
+              timeout={1000 * 60 * 3}
+          />
+          <Navbar collapseOnSelect expand="lg" variant="dark" class="navbar">
+              <div className="navbar-header">
+                  <a className="navbar-brand headerHeight flexVertical" href="#">
+                      <img src={require('./images/webroot_white.png')} style={{width:200, position: "absolute", left: 24}}/>
+                  </a>
+              </div>
+              <Navbar.Collapse>
+                  <Nav style={{
+                      position: 'absolute',
+                      right: 5
+                  }}>
+                      {isAuthenticated
+                          ? //<a class="logout-btn" href="/login" role="button">Logout</a>
+                          <div className="navbar-header">
+                              <div className="headerHeight flexVertical">
+                                  <DropDown signout={handleLogout}/>
+                                  {/*<Button onClick={handleLogout}>Logout</Button>*/}
+                              </div>
 
-          <Routes appProps={{ isAuthenticated, userHasAuthenticated }} />
+                          </div>
+                          : <br />
+                      }
+                  </Nav>
+              </Navbar.Collapse>
+
+          </Navbar>
+          <Routes appProps={{ isAuthenticated, setIsAuthenticated }} />
       </div>
   );
 }
